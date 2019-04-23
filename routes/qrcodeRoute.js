@@ -103,7 +103,7 @@ var returnRouter = function(io , users) {
 
             for(var obj in data){
                 data[obj].date = (new Date(data[obj].date)).toISOString().split('T')[0];
-                data[obj].totalStudents = 20;
+                data[obj].totalStudents = 28;
 
             }
             res.json(data);
