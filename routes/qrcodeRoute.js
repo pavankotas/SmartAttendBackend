@@ -74,7 +74,7 @@ var returnRouter = function(io , users) {
     });
 
 
-    qrRouter.get('/adminreport',function (req, res, next) {
+    qrRouter.get('/report',function (req, res, next) {
 
         Attendance.aggregate([
 
