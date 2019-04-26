@@ -2,7 +2,7 @@ const express =require('express');
 const qrRouter = express.Router();
 const QRCode = require('../models/QRCode');
 const Attendance  = require('../models/Attendance');
-
+const Users = require('../models/registrationModel');
 var returnRouter = function(io , users) {
 
     qrRouter.post('/add',function (req, res, next) {
@@ -111,8 +111,45 @@ var returnRouter = function(io , users) {
 
     });
 
+    qrRouter.get('/detailedreport/:date',function (req, res, next) {
+
+        Users.find({userType:"student"},{firstName:1, lastName:1, emailID:1, _id:0 }, function (err, users) {
+
+            var fromDate = new Date(req.params.date);
+            var toDate = new Date(req.params.date);
+            toDate.setDate(fromDate.getDate() + 1);
+
+            Attendance.find(
+                {
+                    "createdOn": {
+                        "$gte": fromDate,
+                        "$lt": toDate
+                    }
+                },
+                { studentEmailID: 1, _id: 0 }
+                , function (err, data) {
+
+                    for(var i in users){
+                        users[i].Attended = false;
+                        for(var j in data){
+                            if(users[i].emailID == data[j].studentEmailID)
+                            {
+                                users[i].Attended = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(err)
+                        res.json(err);
+                    res.json(users);
+                });
 
 
+        }).lean().exec();
+
+
+
+    });
 
     qrRouter.get('/studentreport/:id',function (req, res, next) {
 
@@ -125,7 +162,7 @@ var returnRouter = function(io , users) {
            }
 
            res.json(dates);
-       });
+       })
 
     });
 
